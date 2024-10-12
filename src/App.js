@@ -10,20 +10,36 @@ const MobileResponsiveApp = () => {
   const [fileName, setFileName] = useState(null);
   const [zipCode, setZipCode] = useState(''); // zipcode
   const navigate = useNavigate(); // Hook to navigate between screens
+  const [base64Image, setBase64Image] = useState('');  // Store base64 image string
+  const [apiResponse, setApiResponse] = useState('');  // Store API response
+
+  // Convert image to base64
+  const convertToBase64 = (file) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      setBase64Image(reader.result);
+    };
+    console.log('converting to base64')
+  };
 
   const handleSelectChange = (event) => {
     setSelectedItem(event.target.value);
   };
 
   const handleFileChange = (event) => {
-    setFileName(event.target.files[0]?.name || 'No file chosen');
+    const file = event.target.files[0];
+    setFileName(file?.name || 'No file chosen');
+    if (file) {
+      convertToBase64(file);
+    }
   };
 
   const handleZipCodeChange = (event) => {
-    setZipCode(event.target.value); // Update zip code state
+    setZipCode(event.target.value);
   };
 
-  const handleSubmit = () => { // CHANGED
+  const handleSubmit = () => {
     // Handle form submission logic
     const apiData = {
       damages: [
@@ -34,9 +50,36 @@ const MobileResponsiveApp = () => {
       totalInsuranceClaim: 4500,
       totalInsuranceSavePercentage: 64,
     };
-    navigate('/results', { state: apiData });
+
     // console.log("Submitted: ", { selectedItem, fileName, zipCode });
 
+    if (!base64Image || !selectedItem || !zipCode) {
+      return;
+    }
+  
+    // Make the API call to Flask
+    fetch('http://127.0.0.1:5000/process-image', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        base64_image: base64Image,  // Make sure this contains the base64 string
+      }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        console.log('Success:', data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+
+
+      navigate('/results', { state: apiData });
+    
   };
 
   return (
@@ -51,7 +94,7 @@ const MobileResponsiveApp = () => {
         backgroundColor: '#ffe5b4',
       }}
     >
-      {/* Header 1*/}
+      {/* Header 1 */}
       <Box
         component="header"
         sx={{
@@ -68,7 +111,7 @@ const MobileResponsiveApp = () => {
         Welcome to Milton: the AI-powered community rebuilder.
       </Box>
 
-      {/* Header 2*/}
+      {/* Header 2 */}
       <Box
         component="header"
         sx={{
@@ -119,30 +162,37 @@ const MobileResponsiveApp = () => {
         variant="outlined"
         value={zipCode}
         onChange={handleZipCodeChange}
-        sx={{ mb: 2 }} // Add margin for spacing
+        sx={{ mb: 2 }}
       />
 
       {/* File Upload */}
       <Button variant="contained" component="label" fullWidth>
-        Upload File 
+        Upload File
         <Input type="file" hidden onChange={handleFileChange} />
       </Button>
 
       {/* Display Selected File Name */}
       <Box sx={{ mt: 2, fontSize: '14px', textAlign: 'center' }}>
         {fileName ? `Selected File: ${fileName}` : 'No file chosen'}
+      </Box>
 
-        {/* Submit Button */} 
+      {/* Submit Button */}
       <Button
         variant="contained"
         fullWidth
         sx={{ mt: 2 }}
         onClick={handleSubmit}
-        disabled={!selectedItem || !fileName || !zipCode} // Disable button until all fields are filled
+        disabled={!selectedItem || !fileName || !zipCode}
       >
         Submit
-        </Button>
-      </Box>
+      </Button>
+
+      {/* Display API Response */}
+      {apiResponse && (
+        <Box sx={{ mt: 4, fontSize: '16px', textAlign: 'center', color: '#333' }}>
+          <p>{apiResponse}</p>
+        </Box>
+      )}
     </Box>
   );
 };
