@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { Box, Button, Select, MenuItem, InputLabel, FormControl, Input, TextField } from '@mui/material';
 
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import Results from './Results'; // Import Results component
+
+
 const MobileResponsiveApp = () => {
   const [selectedItem, setSelectedItem] = useState('');
   const [fileName, setFileName] = useState(null);
   const [zipCode, setZipCode] = useState(''); // zipcode
+  const navigate = useNavigate(); // Hook to navigate between screens
 
   const handleSelectChange = (event) => {
     setSelectedItem(event.target.value);
@@ -20,7 +25,18 @@ const MobileResponsiveApp = () => {
 
   const handleSubmit = () => { // CHANGED
     // Handle form submission logic
-    console.log("Submitted: ", { selectedItem, fileName, zipCode });
+    const apiData = {
+      damages: [
+        { name: 'Roof Damage', cost: 5000, damageScore: 7, insuranceClaim: 3000, likelihood: 'High' },
+        { name: 'Water Damage', cost: 2000, damageScore: 5, insuranceClaim: 1500, likelihood: 'Medium' },
+      ],
+      totalDamage: 7000,
+      totalInsuranceClaim: 4500,
+      totalInsuranceSavePercentage: 64,
+    };
+    navigate('/results', { state: apiData });
+    // console.log("Submitted: ", { selectedItem, fileName, zipCode });
+
   };
 
   return (
@@ -94,8 +110,10 @@ const MobileResponsiveApp = () => {
         </Select>
       </FormControl>
 
+
        {/* Zip Code Input */} 
        <TextField
+
         fullWidth
         label="Input your zipcode"
         variant="outlined"
@@ -129,4 +147,15 @@ const MobileResponsiveApp = () => {
   );
 };
 
-export default MobileResponsiveApp;
+const App = () => {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<MobileResponsiveApp />} />
+        <Route path="/results" element={<Results />} />
+      </Routes>
+    </Router>
+  );
+};
+
+export default App;
