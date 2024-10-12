@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Box, Button, Select, MenuItem, InputLabel, FormControl, Input, TextField } from '@mui/material';
-
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import Results from './Results'; // Import Results component
 
