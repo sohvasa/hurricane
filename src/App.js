@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Box, Button, Select, MenuItem, InputLabel, FormControl, Input } from '@mui/material';
+import { Box, Button, Select, MenuItem, InputLabel, FormControl, Input, TextField } from '@mui/material';
+
 
 const MobileResponsiveApp = () => {
   const [selectedItem, setSelectedItem] = useState('');
   const [fileName, setFileName] = useState(null);
+  const [zipCode, setZipCode] = useState('');
 
   const handleSelectChange = (event) => {
     setSelectedItem(event.target.value);
@@ -11,6 +13,15 @@ const MobileResponsiveApp = () => {
 
   const handleFileChange = (event) => {
     setFileName(event.target.files[0]?.name || 'No file chosen');
+  };
+
+  const handleZipCodeChange = (event) => {
+    setZipCode(event.target.value); // Update zip code state
+  };
+
+  const handleSubmit = () => {
+    // Handle form submission logic
+    console.log("Submitted: ", { selectedItem, fileName, zipCode });
   };
 
   return (
@@ -41,6 +52,16 @@ const MobileResponsiveApp = () => {
         </Select>
       </FormControl>
 
+        {/* Zip Code Input */}
+        <TextField
+        fullWidth
+        label="Input your zipcode"
+        variant="outlined"
+        value={zipCode}
+        onChange={handleZipCodeChange}
+        sx={{ mb: 2 }} // Add margin for spacing
+      />
+
       {/* File Upload */}
       <Button variant="contained" component="label" fullWidth>
         Upload File
@@ -50,6 +71,17 @@ const MobileResponsiveApp = () => {
       {/* Display Selected File Name */}
       <Box sx={{ mt: 2, fontSize: '14px', textAlign: 'center' }}>
         {fileName ? `Selected File: ${fileName}` : 'No file chosen'}
+
+        {/* Submit Button */}
+      <Button
+        variant="contained"
+        fullWidth
+        sx={{ mt: 2 }}
+        onClick={handleSubmit}
+        disabled={!selectedItem || !fileName || !zipCode} // Disable button until all fields are filled
+      >
+        Submit
+        </Button>
       </Box>
     </Box>
   );
