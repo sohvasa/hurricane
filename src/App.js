@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Button, Select, MenuItem, InputLabel, FormControl, Input, TextField } from '@mui/material';
+
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import Results from './Results'; // Import Results component
 
@@ -35,6 +36,7 @@ const MobileResponsiveApp = () => {
     };
     navigate('/results', { state: apiData });
     // console.log("Submitted: ", { selectedItem, fileName, zipCode });
+
   };
 
   return (
@@ -46,9 +48,43 @@ const MobileResponsiveApp = () => {
         alignItems: 'center',
         padding: '16px',
         height: '100vh',
-        backgroundColor: '#f0f0f0',
+        backgroundColor: '#ffe5b4',
       }}
     >
+      {/* Header 1*/}
+      <Box
+        component="header"
+        sx={{
+          width: '100%',
+          padding: '16px',
+          backgroundColor: '#ffe5b4',
+          color: '#000',
+          textAlign: 'center',
+          fontSize: '2rem',
+          fontWeight: 'bold',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+        }}
+      >
+        Welcome to Milton: the AI-powered community rebuilder.
+      </Box>
+
+      {/* Header 2*/}
+      <Box
+        component="header"
+        sx={{
+          width: '100%',
+          padding: '50px',
+          backgroundColor: '#ffe5b4',
+          color: '#000',
+          textAlign: 'center',
+          fontSize: '1.2rem',
+          fontWeight: 'semi-bold',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+        }}
+      >
+        Upload your damages. Get your life back.
+      </Box>
+
       {/* Dropdown Menu */}
       <FormControl fullWidth sx={{ mb: 2 }}>
         <InputLabel id="dropdown-label">Select an option</InputLabel>
@@ -59,14 +95,25 @@ const MobileResponsiveApp = () => {
           label="Select an option"
           onChange={handleSelectChange}
         >
-          <MenuItem value="option1">Option 1</MenuItem>
-          <MenuItem value="option2">Option 2</MenuItem>
-          <MenuItem value="option3">Option 3</MenuItem>
+          <MenuItem value="option1">Allstate</MenuItem>
+          <MenuItem value="option2">NFIP</MenuItem>
+          <MenuItem value="option3">Allied Trust</MenuItem>
+          <MenuItem value="option4">American Family</MenuItem>
+          <MenuItem value="option5">Auto Club South Insurance</MenuItem>
+          <MenuItem value="option6">Centauri Specialty</MenuItem>
+          <MenuItem value="option7">Fire Insurance Exchange</MenuItem>
+          <MenuItem value="option8">Hartfort Fire Insurance</MenuItem>
+          <MenuItem value="option9">Liberty Mutual</MenuItem>
+          <MenuItem value="option10">People's Trust</MenuItem>
+          <MenuItem value="option11">USAA</MenuItem>
+          <MenuItem value="option12">Wright National Flood</MenuItem>
         </Select>
       </FormControl>
 
-        {/* Zip Code Input */} 
-        <TextField
+
+       {/* Zip Code Input */} 
+       <TextField
+
         fullWidth
         label="Input your zipcode"
         variant="outlined"
@@ -77,7 +124,7 @@ const MobileResponsiveApp = () => {
 
       {/* File Upload */}
       <Button variant="contained" component="label" fullWidth>
-        Upload File
+        Upload File 
         <Input type="file" hidden onChange={handleFileChange} />
       </Button>
 
