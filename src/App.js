@@ -1,13 +1,33 @@
 import React, { useState } from 'react';
-import { Box, Button, Select, MenuItem, InputLabel, FormControl, Input, TextField } from '@mui/material';
+
+import { Box, Button, Select, MenuItem, InputLabel, FormControl, Input, TextField, Card, CardContent, Typography, Grid, Divider, IconButton } from '@mui/material';
+import { AddCircleOutline } from '@mui/icons-material';
+
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import Results from './Results'; // Import Results component
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import '@fontsource/poppins'; // Import professional fonts
 
+// Create a custom theme for the app
+const theme = createTheme({
+  typography: {
+    fontFamily: 'Poppins, Arial, sans-serif',
+    h4: {
+      fontWeight: 600,
+    },
+    h6: {
+      fontWeight: 500,
+    },
+    body1: {
+      fontSize: '1rem',
+    },
+  },
+});
 
 const MobileResponsiveApp = () => {
   const [selectedItem, setSelectedItem] = useState('');
-  const [fileName, setFileName] = useState(null);
-  const [zipCode, setZipCode] = useState(''); // zipcode
+  const [fileNames, setFileNames] = useState([]);
+  const [zipCode, setZipCode] = useState('');
   const navigate = useNavigate(); // Hook to navigate between screens
   const [base64Image, setBase64Image] = useState('');  // Store base64 image string
   const [apiResponse, setApiResponse] = useState('');  // Store API response
@@ -28,16 +48,19 @@ const MobileResponsiveApp = () => {
   };
 
   const handleFileChange = (event) => {
+
     const file = event.target.files[0];
     setFileName(file?.name || 'No file chosen');
     if (file) {
       convertToBase64(file);
     }
+
   };
 
   const handleZipCodeChange = (event) => {
     setZipCode(event.target.value);
   };
+
 
   function parseDamageReport(inputString) {
     // Regular expression to match names surrounded by **
@@ -62,10 +85,12 @@ const MobileResponsiveApp = () => {
     const totalEstimatedDamage = costMatches[costMatches.length - 1];
   
     // Construct the final apiData object
+
     const apiData = {
       damages,
       totalDamage: totalEstimatedDamage,  // Using the total from the string
     };
+
   
     return apiData;
   }
@@ -139,87 +164,124 @@ const MobileResponsiveApp = () => {
 
       {/* Header 2 */}
       <Box
-        component="header"
         sx={{
-          width: '100%',
-          padding: '50px',
-          backgroundColor: '#ffe5b4',
-          color: '#000',
-          textAlign: 'center',
-          fontSize: '1.2rem',
-          fontWeight: 'semi-bold',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100vh',
+          backgroundColor: '#f9f9f9',
+          padding: '32px',
         }}
       >
-        Upload your damages. Get your life back.
+        <Card sx={{ maxWidth: '600px', width: '100%', boxShadow: 3 }}>
+          <CardContent>
+            {/* Main Heading */}
+            <Typography variant="h4" sx={{ mb: 4, textAlign: 'center' }}>
+              Hurric<strong>ai</strong>d
+            </Typography>
+
+
+
+            {/* Subheading: Short, Professional Statement */}
+            <Typography variant="h6" sx={{ mb: 4, textAlign: 'center' }}>
+              AI-powered insights for smarter claim recovery.
+            </Typography>
+
+            {/* Short Instruction */}
+            <Typography variant="body1" sx={{ mb: 3, textAlign: 'center' }}>
+              Upload your damages. Get your life back.
+            </Typography>
+
+            <Divider sx={{ mb: 3 }} />
+
+            {/* Dropdown Menu */}
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <InputLabel id="dropdown-label">Select your insurance provider</InputLabel>
+              <Select
+                labelId="dropdown-label"
+                id="dropdown"
+                value={selectedItem}
+                label="Select your insurance provider"
+                onChange={handleSelectChange}
+              >
+                <MenuItem value="option1">Allstate</MenuItem>
+                <MenuItem value="option2">NFIP</MenuItem>
+                <MenuItem value="option3">Allied Trust</MenuItem>
+                <MenuItem value="option4">American Family</MenuItem>
+                <MenuItem value="option5">Auto Club South Insurance</MenuItem>
+                <MenuItem value="option6">Centauri Specialty</MenuItem>
+                <MenuItem value="option7">Fire Insurance Exchange</MenuItem>
+                <MenuItem value="option8">Hartfort Fire Insurance</MenuItem>
+                <MenuItem value="option9">Liberty Mutual</MenuItem>
+                <MenuItem value="option10">People's Trust</MenuItem>
+                <MenuItem value="option11">USAA</MenuItem>
+                <MenuItem value="option12">Wright National Flood</MenuItem>
+              </Select>
+            </FormControl>
+
+            {/* Zip Code Input */}
+            <TextField
+              fullWidth
+              label="Input your zipcode"
+              variant="outlined"
+              value={zipCode}
+              onChange={handleZipCodeChange}
+              sx={{ mb: 3 }}
+            />
+
+            {/* Custom File Upload */}
+            <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
+              <Button
+                variant="contained"
+                component="label"
+                sx={{ mr: 2 }}
+              >
+                Upload Files
+                <input
+                  type="file"
+                  hidden
+                  onChange={handleFileChange}
+                  multiple
+                />
+              </Button>
+              <IconButton color="primary" component="label">
+                <AddCircleOutline />
+                <input
+                  type="file"
+                  hidden
+                  onChange={handleFileChange}
+                  multiple
+                />
+              </IconButton>
+            </Box>
+
+            {/* Display Selected File Names */}
+            <Box sx={{ mb: 3, fontSize: '0.9rem', textAlign: 'center' }}>
+              {fileNames.length > 0 ? (
+                <ul>
+                  {fileNames.map((fileName, index) => (
+                    <li key={index}>{fileName}</li>
+                  ))}
+                </ul>
+              ) : (
+                'No files chosen'
+              )}
+            </Box>
+
+            {/* Submit Button */}
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={handleSubmit}
+              disabled={!selectedItem || fileNames.length === 0 || !zipCode} // Disable button until all fields are filled
+            >
+              Submit
+            </Button>
+          </CardContent>
+        </Card>
       </Box>
+    </ThemeProvider>
 
-      {/* Dropdown Menu */}
-      <FormControl fullWidth sx={{ mb: 2 }}>
-        <InputLabel id="dropdown-label">Select an option</InputLabel>
-        <Select
-          labelId="dropdown-label"
-          id="dropdown"
-          value={selectedItem}
-          label="Select an option"
-          onChange={handleSelectChange}
-        >
-          <MenuItem value="option1">Allstate</MenuItem>
-          <MenuItem value="option2">NFIP</MenuItem>
-          <MenuItem value="option3">Allied Trust</MenuItem>
-          <MenuItem value="option4">American Family</MenuItem>
-          <MenuItem value="option5">Auto Club South Insurance</MenuItem>
-          <MenuItem value="option6">Centauri Specialty</MenuItem>
-          <MenuItem value="option7">Fire Insurance Exchange</MenuItem>
-          <MenuItem value="option8">Hartfort Fire Insurance</MenuItem>
-          <MenuItem value="option9">Liberty Mutual</MenuItem>
-          <MenuItem value="option10">People's Trust</MenuItem>
-          <MenuItem value="option11">USAA</MenuItem>
-          <MenuItem value="option12">Wright National Flood</MenuItem>
-        </Select>
-      </FormControl>
-
-
-       {/* Zip Code Input */} 
-       <TextField
-
-        fullWidth
-        label="Input your zipcode"
-        variant="outlined"
-        value={zipCode}
-        onChange={handleZipCodeChange}
-        sx={{ mb: 2 }}
-      />
-
-      {/* File Upload */}
-      <Button variant="contained" component="label" fullWidth>
-        Upload File
-        <Input type="file" hidden onChange={handleFileChange} />
-      </Button>
-
-      {/* Display Selected File Name */}
-      <Box sx={{ mt: 2, fontSize: '14px', textAlign: 'center' }}>
-        {fileName ? `Selected File: ${fileName}` : 'No file chosen'}
-      </Box>
-
-      {/* Submit Button */}
-      <Button
-        variant="contained"
-        fullWidth
-        sx={{ mt: 2 }}
-        onClick={handleSubmit}
-        disabled={!selectedItem || !fileName || !zipCode}
-      >
-        Submit
-      </Button>
-
-      {/* Display API Response */}
-      {apiResponse && (
-        <Box sx={{ mt: 4, fontSize: '16px', textAlign: 'center', color: '#333' }}>
-          <p>{apiResponse}</p>
-        </Box>
-      )}
-    </Box>
   );
 };
 

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Box, Typography, Card, CardContent, Grid, Divider, Button } from '@mui/material';
+
 import { useLocation, useNavigate  } from 'react-router-dom';
+
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import '@fontsource/poppins'; // Import professional fonts
 
@@ -23,6 +25,7 @@ const theme = createTheme({
 const Results = () => {
   const location = useLocation();
   const navigate = useNavigate(); // Hook to navigate
+
   const { damages, totalDamage, totalInsuranceClaim, totalInsuranceSavePercentage } = location.state || {}; // Extract data from state
 
   const handleBackClick = () => {
@@ -56,6 +59,7 @@ const Results = () => {
                   <Divider sx={{ my: 1 }} />
                   <Grid container spacing={2}>
                     <Grid item xs={6}>
+
                       <Typography>Insurance Claim: <strong>${damage.cost}</strong></Typography>
                     </Grid>
                     <Grid item xs={6}>
@@ -75,6 +79,7 @@ const Results = () => {
                 <Divider sx={{ mb: 2 }} />
                 <Grid container spacing={2}>
                   <Grid item xs={4}>
+
                     <Typography>Total Damages:</Typography>
                     <Typography><strong>${totalDamage}</strong></Typography>
                   </Grid>
@@ -102,8 +107,6 @@ const Results = () => {
           Back to Home
         </Button>
       </Box>
-            
-
     </ThemeProvider>
   );
 };
