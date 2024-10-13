@@ -17,10 +17,11 @@ const MobileResponsiveApp = () => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
-      setBase64Image(reader.result);
+      const base64String = reader.result.split(',')[1];  // Remove the metadata part
+      setBase64Image(base64String);  // Only send the base64 data
     };
-    console.log('converting to base64')
   };
+  
 
   const handleSelectChange = (event) => {
     setSelectedItem(event.target.value);
@@ -38,20 +39,42 @@ const MobileResponsiveApp = () => {
     setZipCode(event.target.value);
   };
 
+  function parseDamageReport(inputString) {
+    // Regular expression to match names surrounded by **
+    const nameMatches = inputString.match(/\*\*(.*?)\*\*/g)?.map(name => name.replace(/\*\*/g, '').trim()) || [];
+  
+    // Regular expression to match all dollar values (after $)
+    const costMatches = inputString.match(/\$(\d+[,.]?\d*)/g)?.map(cost => parseFloat(cost.replace(/[$,]/g, ''))) || [];
+  
+    const damages = [];
+    let totalDamage = 0;
+  
+    // Iterate over both name and cost matches (excluding the last cost, which is the total)
+    for (let i = 0; i < nameMatches.length && i < costMatches.length - 1; i++) {
+      damages.push({
+        name: nameMatches[i],
+        cost: costMatches[i],
+      });
+      totalDamage += costMatches[i]; // Add to total damage
+    }
+  
+    // The last cost match is the total estimated damage
+    const totalEstimatedDamage = costMatches[costMatches.length - 1];
+  
+    // Construct the final apiData object
+    const apiData = {
+      damages,
+      totalDamage: totalEstimatedDamage,  // Using the total from the string
+    };
+  
+    return apiData;
+  }
+  
+
   const handleSubmit = () => {
     // Handle form submission logic
-    const apiData = {
-      damages: [
-        { name: 'Roof Damage', cost: 5000, damageScore: 7, insuranceClaim: 3000, likelihood: 'High' },
-        { name: 'Water Damage', cost: 2000, damageScore: 5, insuranceClaim: 1500, likelihood: 'Medium' },
-      ],
-      totalDamage: 7000,
-      totalInsuranceClaim: 4500,
-      totalInsuranceSavePercentage: 64,
-    };
-
-    // console.log("Submitted: ", { selectedItem, fileName, zipCode });
-
+  
+    // Check if required fields are provided
     if (!base64Image || !selectedItem || !zipCode) {
       return;
     }
@@ -70,15 +93,19 @@ const MobileResponsiveApp = () => {
         return response.json();
       })
       .then((data) => {
+        // Once the API response is received, set the inputStr and navigate
         console.log('Success:', data);
+  
+        const apiData = parseDamageReport(data.report);
+        console.log('report:', data.report);
+        console.log('API Data:', apiData);
+
+        // Ensure navigation happens only after data is processed
+        navigate('/results', { state: apiData });
       })
       .catch((error) => {
         console.error('Error:', error);
       });
-
-
-      navigate('/results', { state: apiData });
-    
   };
 
   return (

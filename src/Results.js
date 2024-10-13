@@ -56,16 +56,10 @@ const Results = () => {
                   <Divider sx={{ my: 1 }} />
                   <Grid container spacing={2}>
                     <Grid item xs={6}>
-                      <Typography>Cost: <strong>${damage.cost}</strong></Typography>
+                      <Typography>Insurance Claim: <strong>${damage.cost}</strong></Typography>
                     </Grid>
                     <Grid item xs={6}>
-                      <Typography>Damage Score: <strong>{damage.damageScore}</strong></Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography>Insurance Claim: <strong>${damage.insuranceClaim}</strong></Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography>Likelihood: <strong>{damage.likelihood}</strong></Typography>
+                      <Typography>Expected Proceed: <strong>{'$' + damage.cost * 0.65}</strong></Typography>
                     </Grid>
                   </Grid>
                 </CardContent>
