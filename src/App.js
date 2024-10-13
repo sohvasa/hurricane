@@ -1,14 +1,31 @@
 import React, { useState } from 'react';
-import { Box, Button, Select, MenuItem, InputLabel, FormControl, Input, TextField } from '@mui/material';
-
+import { Box, Button, Select, MenuItem, InputLabel, FormControl, Input, TextField, Card, CardContent, Typography, Grid, Divider, IconButton } from '@mui/material';
+import { AddCircleOutline } from '@mui/icons-material';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import Results from './Results'; // Import Results component
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import '@fontsource/poppins'; // Import professional fonts
 
+// Create a custom theme for the app
+const theme = createTheme({
+  typography: {
+    fontFamily: 'Poppins, Arial, sans-serif',
+    h4: {
+      fontWeight: 600,
+    },
+    h6: {
+      fontWeight: 500,
+    },
+    body1: {
+      fontSize: '1rem',
+    },
+  },
+});
 
 const MobileResponsiveApp = () => {
   const [selectedItem, setSelectedItem] = useState('');
-  const [fileName, setFileName] = useState(null);
-  const [zipCode, setZipCode] = useState(''); // zipcode
+  const [fileNames, setFileNames] = useState([]);
+  const [zipCode, setZipCode] = useState('');
   const navigate = useNavigate(); // Hook to navigate between screens
 
   const handleSelectChange = (event) => {
@@ -16,15 +33,17 @@ const MobileResponsiveApp = () => {
   };
 
   const handleFileChange = (event) => {
-    setFileName(event.target.files[0]?.name || 'No file chosen');
+    const selectedFiles = Array.from(event.target.files).map(file => file.name);
+    setFileNames((prevFiles) => [...prevFiles, ...selectedFiles]); // Append new files to the existing list 
+    // Store array of selected file names
   };
 
   const handleZipCodeChange = (event) => {
-    setZipCode(event.target.value); // Update zip code state
+    setZipCode(event.target.value);
   };
 
-  const handleSubmit = () => { // CHANGED
-    // Handle form submission logic
+  const handleSubmit = () => {
+    // Simulated API data
     const apiData = {
       damages: [
         { name: 'Roof Damage', cost: 5000, damageScore: 7, insuranceClaim: 3000, likelihood: 'High' },
@@ -35,115 +54,128 @@ const MobileResponsiveApp = () => {
       totalInsuranceSavePercentage: 64,
     };
     navigate('/results', { state: apiData });
-    // console.log("Submitted: ", { selectedItem, fileName, zipCode });
-
   };
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '16px',
-        height: '100vh',
-        backgroundColor: '#ffe5b4',
-      }}
-    >
-      {/* Header 1*/}
+    <ThemeProvider theme={theme}>
       <Box
-        component="header"
         sx={{
-          width: '100%',
-          padding: '16px',
-          backgroundColor: '#ffe5b4',
-          color: '#000',
-          textAlign: 'center',
-          fontSize: '2rem',
-          fontWeight: 'bold',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100vh',
+          backgroundColor: '#f9f9f9',
+          padding: '32px',
         }}
       >
-        Welcome to Milton: the AI-powered community rebuilder.
+        <Card sx={{ maxWidth: '600px', width: '100%', boxShadow: 3 }}>
+          <CardContent>
+            {/* Main Heading */}
+            <Typography variant="h4" sx={{ mb: 4, textAlign: 'center' }}>
+              Hurric<strong>ai</strong>d
+            </Typography>
+
+
+
+            {/* Subheading: Short, Professional Statement */}
+            <Typography variant="h6" sx={{ mb: 4, textAlign: 'center' }}>
+              AI-powered insights for smarter claim recovery.
+            </Typography>
+
+            {/* Short Instruction */}
+            <Typography variant="body1" sx={{ mb: 3, textAlign: 'center' }}>
+              Upload your damages. Get your life back.
+            </Typography>
+
+            <Divider sx={{ mb: 3 }} />
+
+            {/* Dropdown Menu */}
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <InputLabel id="dropdown-label">Select your insurance provider</InputLabel>
+              <Select
+                labelId="dropdown-label"
+                id="dropdown"
+                value={selectedItem}
+                label="Select your insurance provider"
+                onChange={handleSelectChange}
+              >
+                <MenuItem value="option1">Allstate</MenuItem>
+                <MenuItem value="option2">NFIP</MenuItem>
+                <MenuItem value="option3">Allied Trust</MenuItem>
+                <MenuItem value="option4">American Family</MenuItem>
+                <MenuItem value="option5">Auto Club South Insurance</MenuItem>
+                <MenuItem value="option6">Centauri Specialty</MenuItem>
+                <MenuItem value="option7">Fire Insurance Exchange</MenuItem>
+                <MenuItem value="option8">Hartfort Fire Insurance</MenuItem>
+                <MenuItem value="option9">Liberty Mutual</MenuItem>
+                <MenuItem value="option10">People's Trust</MenuItem>
+                <MenuItem value="option11">USAA</MenuItem>
+                <MenuItem value="option12">Wright National Flood</MenuItem>
+              </Select>
+            </FormControl>
+
+            {/* Zip Code Input */}
+            <TextField
+              fullWidth
+              label="Input your zipcode"
+              variant="outlined"
+              value={zipCode}
+              onChange={handleZipCodeChange}
+              sx={{ mb: 3 }}
+            />
+
+            {/* Custom File Upload */}
+            <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
+              <Button
+                variant="contained"
+                component="label"
+                sx={{ mr: 2 }}
+              >
+                Upload Files
+                <input
+                  type="file"
+                  hidden
+                  onChange={handleFileChange}
+                  multiple
+                />
+              </Button>
+              <IconButton color="primary" component="label">
+                <AddCircleOutline />
+                <input
+                  type="file"
+                  hidden
+                  onChange={handleFileChange}
+                  multiple
+                />
+              </IconButton>
+            </Box>
+
+            {/* Display Selected File Names */}
+            <Box sx={{ mb: 3, fontSize: '0.9rem', textAlign: 'center' }}>
+              {fileNames.length > 0 ? (
+                <ul>
+                  {fileNames.map((fileName, index) => (
+                    <li key={index}>{fileName}</li>
+                  ))}
+                </ul>
+              ) : (
+                'No files chosen'
+              )}
+            </Box>
+
+            {/* Submit Button */}
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={handleSubmit}
+              disabled={!selectedItem || fileNames.length === 0 || !zipCode} // Disable button until all fields are filled
+            >
+              Submit
+            </Button>
+          </CardContent>
+        </Card>
       </Box>
-
-      {/* Header 2*/}
-      <Box
-        component="header"
-        sx={{
-          width: '100%',
-          padding: '50px',
-          backgroundColor: '#ffe5b4',
-          color: '#000',
-          textAlign: 'center',
-          fontSize: '1.2rem',
-          fontWeight: 'semi-bold',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-        }}
-      >
-        Upload your damages. Get your life back.
-      </Box>
-
-      {/* Dropdown Menu */}
-      <FormControl fullWidth sx={{ mb: 2 }}>
-        <InputLabel id="dropdown-label">Select an option</InputLabel>
-        <Select
-          labelId="dropdown-label"
-          id="dropdown"
-          value={selectedItem}
-          label="Select an option"
-          onChange={handleSelectChange}
-        >
-          <MenuItem value="option1">Allstate</MenuItem>
-          <MenuItem value="option2">NFIP</MenuItem>
-          <MenuItem value="option3">Allied Trust</MenuItem>
-          <MenuItem value="option4">American Family</MenuItem>
-          <MenuItem value="option5">Auto Club South Insurance</MenuItem>
-          <MenuItem value="option6">Centauri Specialty</MenuItem>
-          <MenuItem value="option7">Fire Insurance Exchange</MenuItem>
-          <MenuItem value="option8">Hartfort Fire Insurance</MenuItem>
-          <MenuItem value="option9">Liberty Mutual</MenuItem>
-          <MenuItem value="option10">People's Trust</MenuItem>
-          <MenuItem value="option11">USAA</MenuItem>
-          <MenuItem value="option12">Wright National Flood</MenuItem>
-        </Select>
-      </FormControl>
-
-
-       {/* Zip Code Input */} 
-       <TextField
-
-        fullWidth
-        label="Input your zipcode"
-        variant="outlined"
-        value={zipCode}
-        onChange={handleZipCodeChange}
-        sx={{ mb: 2 }} // Add margin for spacing
-      />
-
-      {/* File Upload */}
-      <Button variant="contained" component="label" fullWidth>
-        Upload File 
-        <Input type="file" hidden onChange={handleFileChange} />
-      </Button>
-
-      {/* Display Selected File Name */}
-      <Box sx={{ mt: 2, fontSize: '14px', textAlign: 'center' }}>
-        {fileName ? `Selected File: ${fileName}` : 'No file chosen'}
-
-        {/* Submit Button */} 
-      <Button
-        variant="contained"
-        fullWidth
-        sx={{ mt: 2 }}
-        onClick={handleSubmit}
-        disabled={!selectedItem || !fileName || !zipCode} // Disable button until all fields are filled
-      >
-        Submit
-        </Button>
-      </Box>
-    </Box>
+    </ThemeProvider>
   );
 };
 
