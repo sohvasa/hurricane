@@ -1,6 +1,8 @@
 import React from 'react';
 import { Box, Typography, Card, CardContent, Grid, Divider, Button } from '@mui/material';
-import { useLocation, useNavigate } from 'react-router-dom';
+
+import { useLocation, useNavigate  } from 'react-router-dom';
+
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import '@fontsource/poppins'; // Import professional fonts
 
@@ -23,34 +25,8 @@ const theme = createTheme({
 const Results = () => {
   const location = useLocation();
   const navigate = useNavigate(); // Hook to navigate
-  const { damages } = location.state || {}; // Extract data from state
 
-  // Helper function to calculate likelihood average (convert High/Medium/Low to numerical values)
-  const likelihoodToNumber = (likelihood) => {
-    switch (likelihood) {
-      case 'High':
-        return 3;
-      case 'Medium':
-        return 2;
-      case 'Low':
-        return 1;
-      default:
-        return 0;
-    }
-  };
-
-  const numberToLikelihood = (average) => {
-    if (average >= 2.5) return 'High';
-    if (average >= 1.5) return 'Medium';
-    return 'Low';
-  };
-
-  // Calculate total insurance claim, average damage score, and average likelihood
-  const totalInsuranceClaim = damages?.reduce((acc, damage) => acc + damage.insuranceClaim, 0) || 0;
-  const averageDamageScore =
-    damages?.reduce((acc, damage) => acc + damage.damageScore, 0) / damages.length || 0;
-  const averageLikelihood =
-    damages?.reduce((acc, damage) => acc + likelihoodToNumber(damage.likelihood), 0) / damages.length || 0;
+  const { damages, totalDamage, totalInsuranceClaim, totalInsuranceSavePercentage } = location.state || {}; // Extract data from state
 
   const handleBackClick = () => {
     navigate('/'); // Navigate back to the home page
@@ -83,13 +59,11 @@ const Results = () => {
                   <Divider sx={{ my: 1 }} />
                   <Grid container spacing={2}>
                     <Grid item xs={6}>
-                      <Typography>Damage Score: <strong>{damage.damageScore}</strong></Typography>
+
+                      <Typography>Insurance Claim: <strong>${damage.cost}</strong></Typography>
                     </Grid>
                     <Grid item xs={6}>
-                      <Typography>Insurance Claim: <strong>${damage.insuranceClaim}</strong></Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography>Likelihood: <strong>{damage.likelihood}</strong></Typography>
+                      <Typography>Expected Proceed: <strong>{'$' + damage.cost * 0.65}</strong></Typography>
                     </Grid>
                   </Grid>
                 </CardContent>
@@ -105,16 +79,17 @@ const Results = () => {
                 <Divider sx={{ mb: 2 }} />
                 <Grid container spacing={2}>
                   <Grid item xs={4}>
+
+                    <Typography>Total Damages:</Typography>
+                    <Typography><strong>${totalDamage}</strong></Typography>
+                  </Grid>
+                  <Grid item xs={4}>
                     <Typography>Total Insurance Claim:</Typography>
                     <Typography><strong>${totalInsuranceClaim}</strong></Typography>
                   </Grid>
                   <Grid item xs={4}>
-                    <Typography>Average Damage Score:</Typography>
-                    <Typography><strong>{averageDamageScore.toFixed(2)}</strong></Typography>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Typography>Average Likelihood:</Typography>
-                    <Typography><strong>{numberToLikelihood(averageLikelihood)}</strong></Typography>
+                    <Typography>Insurance Save Percentage:</Typography>
+                    <Typography><strong>{totalInsuranceSavePercentage}%</strong></Typography>
                   </Grid>
                 </Grid>
               </CardContent>
